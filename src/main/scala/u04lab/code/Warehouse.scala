@@ -1,7 +1,6 @@
 package u04lab.code
 import List.*
 
-import scala.runtime.Nothing$
 trait Item {
   def code: Int
   def name: String
@@ -9,9 +8,17 @@ trait Item {
 }
 
 object Item:
+  /*
   def apply(code: Int, name: String, tags: List[String] = List.empty): Item =
-    ItemImpl(code, name, tags)
-  case class ItemImpl(override val code: Int, override val name: String, override val tags: List[String]) extends Item
+    ItemImpl(code, name, tags)*/
+  def apply(code: Int, name: String, tags: String*): Item =
+    ItemImpl(code, name, seqToList(tags))
+
+  private def seqToList(seq: Seq[String]): List[String] = seq match
+    case Seq() => Nil()
+    case _ => append(Cons(seq.head, Nil()), seqToList(seq.tail))
+
+  private case class ItemImpl(override val code: Int, override val name: String, override val tags: List[String]) extends Item
 
 /**
  * A warehouse is a place where items are stored.
@@ -50,8 +57,8 @@ trait Warehouse {
 object Warehouse {
   def apply(): Warehouse =
     WarehouseImpl()
-  case class WarehouseImpl() extends Warehouse:
-    protected var itemsList: List[Item] = Nil()
+  private case class WarehouseImpl() extends Warehouse:
+    private var itemsList: List[Item] = Nil()
     override def store(item: Item): Unit =
       itemsList = List.append(itemsList, Cons(item, Nil()))
     override def searchItems(tag: String): List[Item] =
@@ -66,10 +73,14 @@ object Warehouse {
 
 @main def mainWarehouse(): Unit =
   val warehouse = Warehouse()
-
+  /*
   val dellXps = Item(33, "Dell XPS 15", cons("notebook", empty))
   val dellInspiron = Item(34, "Dell Inspiron 13", cons("notebook", empty))
   val xiaomiMoped = Item(35, "Xiaomi S1", cons("moped", cons("mobility", empty)))
+  */
+  val dellXps = Item(33, "Dell XPS 15", "notebook")
+  val dellInspiron = Item(34, "Dell Inspiron 13", "notebook")
+  val xiaomiMoped = Item(35, "Xiaomi S1", "moped", "mobility")
 
 /*  warehouse.contains(dellXps.code) // false
   warehouse.store(dellXps) // side effect, add dell xps to the warehouse
